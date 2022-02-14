@@ -1,0 +1,61 @@
+# Responses
+
+type UserResponse {
+	user: User!
+	token: String!
+}
+
+type RoleResponse {
+	name: String!
+}
+
+type LogoutResponse {
+	status: String!
+	message: String!
+}
+
+type OtpVerifyResponse {
+	status: String!
+	message: String!
+	user: User
+	token: String
+}
+
+type RequestResetPasswordResponse {
+	status: String!
+	message: String!
+}
+
+type ResendOtpCodeResponse {
+	status: String!
+	message: String!
+}
+
+type ResetPasswordResponse {
+	status: String!
+	message: String!
+}
+
+type DocumentUploadResponse {
+	status: String!
+	message: String!
+	photo: PhotoResponse
+}
+
+type PhotoResponse {
+	filename: String!
+	url: String!
+}
+
+type SendOtpResponse {
+	otp_code: String!
+}
+
+type OtpResponse {
+	otp_code: String!
+}
+
+type UserOtpResponse {
+	user: User!
+	otp_code: String!
+}

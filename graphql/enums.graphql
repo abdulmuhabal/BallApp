@@ -1,0 +1,43 @@
+#Enums
+
+enum Roles {
+	PLAYER
+	TRAINER
+}
+
+enum Genders {
+	MALE
+	FEMALE
+}
+
+enum RequestStatuses {
+	CANCELLED
+	PENDING
+	SKIPPED
+	ACCEPTED
+	COMPLETED
+}
+
+enum BookingStatuses {
+	PENDING
+	COMPLETED
+	CANCELLED
+}
+
+enum OfferStatuses {
+	CANCELLED
+	PENDING
+	SKIPPED
+	ACCEPTED
+	COMPLETED
+}
+
+enum SortOrder {
+	ASC
+	DESC
+}
+
+enum Levels {
+	BEGINNER
+	PROFESSIONAL
+}

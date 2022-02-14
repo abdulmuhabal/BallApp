@@ -1,0 +1,123 @@
+"A datetime string with format `Y-m-d H:i:s`, e.g. `2018-01-01 13:00:00`."
+scalar DateTime
+	@scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\DateTime")
+
+"A date string with format `Y-m-d`, e.g. `2011-05-23`."
+scalar Date 
+	@scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Date")
+
+scalar Upload
+  	@scalar(class: "Nuwave\\Lighthouse\\Schema\\Types\\Scalars\\Upload")
+
+type Mutation {
+	loginAsPlayer(input: LoginInput @spread): UserOtpResponse!
+		@field(resolver: "LoginAsPlayerMutator")
+
+	loginAsTrainer(input: LoginInput @spread): UserOtpResponse!
+		@field(resolver: "LoginAsTrainerMutator")
+
+	resendOtpCode(phone: String @rules(apply: ["required", "min:10", "numeric"])): ResendOtpCodeResponse
+		@field(resolver: "RequestResetPasswordByPhoneMutator")
+
+	otpVerify(input: OtpVerifyInput! @spread): OtpVerifyResponse
+		@field(resolver: "OtpVerifyMutator")
+
+	requestResetPassword(phone: String @rules(apply: ["required", "min:10", "numeric"])): RequestResetPasswordResponse
+		@field(resolver: "RequestResetPasswordByPhoneMutator")
+
+	resetPassword(input: ResetPasswordInput): ResetPasswordResponse 
+		@field(resolver: "ResetPasswordMutator")
+
+	requestRegister(phone: String @rules(apply: ["required", "min:10","max:10", "unique:users,phone"]), role: Roles ): OtpResponse! 
+		@field(resolver: "RequestRegisterMutator")
+		
+	registerAsPlayer(input: RegisterAsPlayerInput @spread): User!
+		@field(resolver: "RegisterAsPlayerMutator")
+
+	registerAsTrainer(input: RegisterAsTrainerInput @spread): User!
+		@field(resolver: "RegisterAsTrainerMutator")
+
+	documentUpload(photo: Upload! @rules(apply: ["required", "mimes:jpeg,jpg,png,gif"])): DocumentUploadResponse 
+		@field(resolver: "DocumentUploadMutator")
+
+	photoUpload(photo: Upload! @rules(apply: ["required", "mimes:jpeg,jpg,png,gif"])): DocumentUploadResponse 
+		@field(resolver: "PhotoUploadMutator")
+	
+}
+
+extend type Mutation @middleware(checks: ["auth:api"]) {
+	logout: LogoutResponse! @field(resolver: "LogoutMutator")
+
+	matchCreate(input: MatchCreateInput! @spread): Match
+		@field(resolver: "MatchCreateMutator")
+	matchUpdate(input: MatchUpdateInput! @spread): Match
+		@field(resolver: "MatchUpdateMutator")
+	matchDelete(id: ID! @eq): Match
+		@delete(model: "App\\Model\\Match")
+
+	exerciseCreate(input: ExerciseCreateInput! @spread): Exercise
+		@field(resolver: "ExerciseCreateMutator")
+	exerciseUpdate(input: ExerciseUpdateInput! @spread): Exercise
+		@field(resolver: "ExerciseUpdateMutator")
+	exerciseDelete(id: ID! @eq): Exercise
+		@delete(model: "App\\Model\\Exercise")
+
+	joinExercise(exercise_id: ID!): ExerciseJoin
+		@field(resolver: "JoinExerciseMutator" ) 
+	
+	joinAcademy(input: AcademyJoinInput): AcademyJoin
+		@field(resolver: "JoinAcademyMutator")
+
+	updateUser(input: UpdateUserInput! @spread): User 
+		@update(model: "App\\User")
+
+	createContactUs(input: CreateContactUsInput! @spread): ContactUs 
+		@create(model: "App\\Model\\ContactUs")
+	updateContactUs(input: UpdateContactUsInput! @spread): ContactUs 
+		@update(model: "App\\Model\\ContactUs")
+	deleteContactUs(id: ID!): ContactUs 
+		@delete(model: "App\\Model\\ContactUs")
+
+	createTrainerReview(input: CreateContactUsInput! @spread): ContactUs 
+		@create(model: "App\\Model\\ContactUs")
+}	
+
+type Query {
+	users(role: Roles @eq, orderBy: [OrderByInput!] @orderBy): 
+		[User!]
+		@paginate(type: "paginator", model: "App\\User", defaultCount: 10)
+
+	user(id: ID @eq): 
+		User 
+		@find(model: "App\\User")
+	
+	positions:
+		[Position]
+		@paginate(type: "paginator", model: "App\\Model\\Position", defaultCount: 10)
+
+	ageBrackets:
+		[AgeBracket]
+		@paginate(type: "paginator", model: "App\\Model\\AgeBracket", defaultCount: 10)
+	
+	matches(between: BetweenInput, my_matches: Boolean, orderBy: [OrderByInput!]  @orderBy):
+		[Match]
+		@paginate(builder: "App\\GraphQL\\CustomQueries\\MatchQuery@search")
+	
+	exercise(between: BetweenInput, my_exercises: Boolean, orderBy: [OrderByInput!] @orderBy):
+		[Exercise]
+		@paginate(builder: "App\\GraphQL\\CustomQueries\\ExerciseQuery@search")
+
+	academies(orderBy: [OrderByInput!] @orderBy):
+		[Academy]
+		@paginate(builder: "App\\GraphQL\\CustomQueries\\AcademyQuery@search")
+}
+
+extend type Query @middleware(checks: ["auth:api"]) {
+	me: User @auth
+}
+
+
+#import models.graphql
+#import inputs.graphql
+#import responses.graphql
+#import enums.graphql

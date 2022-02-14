@@ -1,0 +1,188 @@
+# Models
+
+type TestResponse {
+	message: String
+}
+
+type User {
+	id: ID!
+	name: String
+	email: String
+	phone: String
+	role: Roles
+    api_token: String
+	created_at: DateTime
+	updated_at: DateTime
+	is_verified: Boolean
+    photo: String
+    player: Player
+    trainer: Trainer
+}
+
+type Player {
+    id: ID!
+    user_id: ID
+    user: User
+    location: String
+    location_long: String
+    location_lat: String
+    gender: String
+    age: Int
+    level: Levels
+    favorite_position_id: String
+    height: String
+    weight: Float
+    created_at: DateTime
+	updated_at: DateTime
+}
+
+type Trainer {
+    id: ID!
+    user_id: ID
+    user: User
+    bio: String!
+    age: Int!
+	gender: Genders!
+	documents: String!
+	location: String!
+	location_lat: Float!
+	location_long: Float!
+	instagram_url: String!
+	youtube_url: String!
+	twitter_url: String!
+	whatsapp: String!
+    created_at: DateTime
+	updated_at: DateTime
+    price: Float
+	is_expert_trainer: Boolean
+}
+
+type Position {
+    id: ID!
+    name_en: String
+    name_ar: String
+}
+
+type AgeBracket {
+    id: ID!
+    name_en: String
+    name_ar: String
+}
+
+type Match{
+    id: ID!
+    user_id: ID!
+    user: User!
+    title: String
+    starts: DateTime
+    no_of_players: Int
+    no_of_reserve_players: Int
+    referee: String
+    description: String
+    gender: Genders
+    age_bracket_id: ID
+    stadium_location: String
+    stadium_location_long: Float
+    stadium_location_lat: Float
+    photo: String
+    created_at: DateTime
+	updated_at: DateTime
+}
+
+type Exercise{
+    id: ID!
+    user_id: ID!
+    title: String
+    starts: Date
+    ends: Date
+    no_of_players: Int
+    gender: Genders
+    age_bracket_id: ID
+    age_bracket: AgeBracket @belongsTo(relation: "ageBracket")
+    referee: String
+    price: Float
+    exercise_schedules: [ExerciseSchedule] @hasMany(relation: "exerciseSchedules")
+    stadium_location: String
+    stadium_location_long: Float
+    stadium_location_lat: Float
+    description: String
+    photo: String
+    created_at: DateTime
+	updated_at: DateTime
+}
+
+type ExerciseJoin{
+    user_id: ID
+    user: User
+    exercise_id: ID
+    exercise: Exercise
+    created_at: DateTime
+	updated_at: DateTime
+}
+
+
+type Academy{
+    id: String
+    about_the_academy_en: String
+    about_the_academy_ar: String
+    services_en: String
+    services_ar: String
+    terms_en: String
+    terms_ar: String
+    about_the_academy_en: String
+    price: Float
+    academy_trainers: [AcademyTrainer] @hasMany(relation: "academyTrainers")
+    created_at: DateTime
+	updated_at: DateTime
+}
+
+type AcademyTrainer{
+    academy: Academy
+    trainer: Trainer
+}
+
+type AcademyJoin {
+    academy: Academy
+    name: String
+    phone: String
+    age: Int
+}
+
+type ContactUs {
+	id: ID!
+	user: User
+	phone: String
+	subject: String
+	message: String
+	created_at: DateTime!
+	updated_at: DateTime!
+}
+
+type TrainerReview{
+    id: ID
+    trainer: User
+    rate: Int
+    comment: String
+}
+
+type ExerciseSchedule{
+    id: ID
+    exercise_id: ID
+    exrcise: Exercise
+    time_id: ID
+    time: Time
+    weekday_id: ID
+    weekday: Weekday
+}
+
+type Weekday {
+	id: ID!
+    name_ar: String
+    name_en: String
+}
+
+type Time {
+	id: ID!
+    name_ar: String
+    name_en: String
+}
